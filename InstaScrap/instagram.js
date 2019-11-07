@@ -56,8 +56,9 @@ const instagram = {
         /* Click single post. */
         await posts[0].click();
         await instagram.page.waitFor('h2[class="BrX75"]');
+    
+        /* Wait for like button and click it. */
         await instagram.page.waitFor('span[class="fr66n"]');
-
         let likeButton = await instagram.page.$('span[class="fr66n"] > button');
         await likeButton.click();
 
