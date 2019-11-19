@@ -1,29 +1,62 @@
 const ig = require('./instagram');
 const dotenv = require('dotenv');
-var express = require("express");
+const express = require("express");
+const bodyParser = require('body-parser');
 
 const X_SERVICE_AUTH = "123456";
 
 dotenv.config();
 
 var app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 const authorize = (headers) => {
     if (!headers['x-service-auth'])
         return false;
-    
+
     return headers['x-service-auth'] == X_SERVICE_AUTH;
 }
 
 app.post("/automationBasedOnTags", (req, res, next) => {
     let headers = req.headers;
-    let authorization = authorize(headers);
+    let automationParameters = req.body;
 
-    if (!authorization) {
-        res.status(401).send({message: "Service token not authorized."});
+    if (!authorize(headers)) {
+        res.status(401).send({
+            message: "Service token not authorized."
+        });
+        return;
     }
 
-    res.status(200).send();
+    res.status(200).send({
+        message: "Automation started sucessfuly."
+    });
+
+    let processAvailable = true;
+    let timer = 0;
+
+    let automationInterval = setInterval(() => {
+        timer += 1;
+        if (timer > automationParameters.duration) {
+            processAvailable = false;
+            clearInterval(automationInterval);
+        }
+    }, 1000);
+
+
+    (async () => {
+        await ig.initialize();
+
+        while (processAvailable) {
+            await ig.emailTagProcess(['like4like']);
+        }
+
+        await ig.finishAutomation();
+    })();
+
 });
 
 app.listen(3000, () => {

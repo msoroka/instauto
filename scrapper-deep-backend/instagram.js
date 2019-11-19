@@ -86,7 +86,11 @@ const instagram = {
     },
 
     automationBasedOnTags: async (tags) => {
-        
+
+    },
+
+    finishAutomation: async () => {
+        await instagram.browser.close();
     }
 }
 
