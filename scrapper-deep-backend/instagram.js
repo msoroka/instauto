@@ -83,6 +83,10 @@ const instagram = {
                 }
             }
         }
+    },
+
+    automationBasedOnTags: async (tags) => {
+        
     }
 }
 
