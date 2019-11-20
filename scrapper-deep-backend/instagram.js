@@ -16,7 +16,9 @@ const instagram = {
         instagram.page = await instagram.browser.newPage();
     },
 
-    login: async (username, password) => {
+    login: async (user) => {
+        let username = user.login;
+        let password = user.password;
 
         await instagram.page.goto(BASE_URL, {
             waitUntil: 'networkidle2'
@@ -44,7 +46,9 @@ const instagram = {
         // await instagram.page.waitFor(1000);
     },
 
-    emailTagProcess: async (tag) => {
+    emailTagProcess: async (tags, like) => {
+        // Choose random tag.
+        let tag = tags[Math.floor(Math.random() * tags.length)];
 
         await instagram.page.goto('https://www.instagram.com/explore/tags/' + tag, {
             waitUntil: 'networkidle2'
@@ -57,13 +61,35 @@ const instagram = {
         await posts[0].click();
         await instagram.page.waitFor('h2[class="BrX75"]');
 
-        /* Wait for like button and click it. */
+        // Like process.
         await instagram.page.waitFor('span[class="fr66n"]');
-        let likeButton = await instagram.page.$('span[class="fr66n"] > button');
-        await likeButton.click();
+        if (like.active) {
+            let likeButton = await instagram.page.$('span[class="fr66n"] > button');
+            await likeButton.click();
+
+            if (like.imitation) {
+                let imitationDelayLowerBound = like.imitation.from;
+                let imitationDelayUpperBound = like.imitation.to;
+
+                if (imitationDelayLowerBound > 0 && imitationDelayUpperBound > 0) {
+                    let imitationDelay = Math.floor(imitationDelayLowerBound + Math.random() * (like.imitation.to + 1 - imitationDelayLowerBound))
+                    await instagram.page.waitFor(imitationDelay);
+                };
+            };
+        };
 
         await instagram.page.waitFor(2000);
+    },
 
+    automationBasedOnTags: async (tags) => {
+
+    },
+
+    finishAutomation: async () => {
+        await instagram.browser.close();
+    },
+
+    scrapEmail: async () => {
         /* Enter user profile. */
         let userProfileAnchor = await instagram.page.$('h2[class="BrX75"] > a');
         await userProfileAnchor.click();
@@ -83,14 +109,6 @@ const instagram = {
                 }
             }
         }
-    },
-
-    automationBasedOnTags: async (tags) => {
-
-    },
-
-    finishAutomation: async () => {
-        await instagram.browser.close();
     }
 }
 

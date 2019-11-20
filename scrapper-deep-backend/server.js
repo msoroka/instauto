@@ -49,9 +49,10 @@ app.post("/automationBasedOnTags", (req, res, next) => {
 
     (async () => {
         await ig.initialize();
+        await ig.login(automationParameters.user);
 
         while (processAvailable) {
-            await ig.emailTagProcess(['like4like']);
+            await ig.emailTagProcess(automationParameters.tags, automationParameters.like);
         }
 
         await ig.finishAutomation();
