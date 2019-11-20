@@ -46,7 +46,7 @@ const instagram = {
         // await instagram.page.waitFor(1000);
     },
 
-    emailTagProcess: async (tags, like) => {
+    emailTagProcess: async (tags, like, follow) => {
         // Choose random tag.
         let tag = tags[Math.floor(Math.random() * tags.length)];
 
@@ -68,17 +68,32 @@ const instagram = {
             await likeButton.click();
 
             if (like.imitation) {
-                let imitationDelayLowerBound = like.imitation.from;
-                let imitationDelayUpperBound = like.imitation.to;
-
-                if (imitationDelayLowerBound > 0 && imitationDelayUpperBound > 0) {
-                    let imitationDelay = Math.floor(imitationDelayLowerBound + Math.random() * (like.imitation.to + 1 - imitationDelayLowerBound))
-                    await instagram.page.waitFor(imitationDelay);
+                let imitationDelay = calculateImitationDelay(like.imitation);
+                if (imitationDelay > 0) {
+                    await instagram.page.waitFor(imitationDelay * 1000);
                 };
             };
         };
 
-        await instagram.page.waitFor(2000);
+        // Immutable delay after action.
+        await instagram.page.waitFor(3000);
+
+        // Follow process.
+        await instagram.page.waitFor('div[class="bY2yH"]');
+        if (follow.active) {
+            let followButton = await instagram.page.$('div[class="bY2yH"] > button');
+            await followButton.click();
+
+            if (follow.imitation) {
+                let imitationDelay = calculateImitationDelay(follow.imitation);
+                if (imitationDelay > 0) {
+                    await instagram.page.waitFor(imitationDelay * 1000);
+                };
+            };
+        };
+
+        // Immutable delay after action.
+        await instagram.page.waitFor(3000);
     },
 
     automationBasedOnTags: async (tags) => {
@@ -111,6 +126,18 @@ const instagram = {
         }
     }
 }
+
+const calculateImitationDelay = (imitationDelay) => {
+    let imitationDelayLowerBound = imitationDelay.from;
+    let imitationDelayUpperBound = imitationDelay.to;
+
+    if (imitationDelayLowerBound > 0 && imitationDelayUpperBound > 0) {
+        let imitationDelay = Math.floor(imitationDelayLowerBound + Math.random() * (imitationDelayUpperBound + 1 - imitationDelayLowerBound))
+        return imitationDelay;
+    };
+
+    return 0;
+};
 
 let extractEmail = (text) => {
     return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
