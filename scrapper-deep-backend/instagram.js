@@ -25,6 +25,7 @@ const instagram = {
         });
 
         /* Click login button from the main site. */
+        await instagram.page.waitFor('//a[contains(text(), "Zaloguj się")]');
         let loginButton = await instagram.page.$x('//a[contains(text(), "Zaloguj się")]');
         await loginButton[0].click();
 
@@ -40,20 +41,18 @@ const instagram = {
 
         /* Clicking login button. */
         await instagram.page.$eval('button[type=submit]', el => el.click());
-        await instagram.page.waitFor(1000);
 
-        // await instagram.page.waitFor('a > span[aria-label="Profil]');
-        // await instagram.page.waitFor(1000);
+        await instagram.page.waitFor(5000);
     },
 
-    emailTagProcess: async (tags, like, follow) => {
+    automationBasedOnTags: async (tags, like, follow) => {
         // Choose random tag.
         let tag = tags[Math.floor(Math.random() * tags.length)];
 
         await instagram.page.goto('https://www.instagram.com/explore/tags/' + tag, {
             waitUntil: 'networkidle2'
         });
-        await instagram.page.waitFor(1000);
+        await instagram.page.waitFor(3000);
 
         let posts = await instagram.page.$$('article > div:nth-child(3) img[decoding="auto"]');
 
@@ -62,15 +61,20 @@ const instagram = {
         await instagram.page.waitFor('h2[class="BrX75"]');
 
         // Like process.
-        await instagram.page.waitFor('span[class="fr66n"]');
         if (like.active) {
-            let likeButton = await instagram.page.$('span[class="fr66n"] > button');
-            await likeButton.click();
+            // Randomize like process.
+            let randomProbability = Math.floor(1 + Math.random() * (100 + 1 - 1));
+            if (randomProbability >= like.probability) {
+                await instagram.page.waitFor('span[class="fr66n"]');
 
-            if (like.imitation) {
-                let imitationDelay = calculateImitationDelay(like.imitation);
-                if (imitationDelay > 0) {
-                    await instagram.page.waitFor(imitationDelay * 1000);
+                let likeButton = await instagram.page.$('span[class="fr66n"] > button');
+                await likeButton.click();
+
+                if (like.imitation) {
+                    let imitationDelay = calculateImitationDelay(like.imitation);
+                    if (imitationDelay > 0) {
+                        await instagram.page.waitFor(imitationDelay * 1000);
+                    };
                 };
             };
         };
@@ -81,23 +85,23 @@ const instagram = {
         // Follow process.
         await instagram.page.waitFor('div[class="bY2yH"]');
         if (follow.active) {
-            let followButton = await instagram.page.$('div[class="bY2yH"] > button');
-            await followButton.click();
+            let randomProbability = Math.floor(1 + Math.random() * (100 + 1 - 1));
+            if (randomProbability >= follow.probability) {
+                console.log("FOLLOWING: " + randomProbability);
+                let followButton = await instagram.page.$('div[class="bY2yH"] > button');
+                await followButton.click();
 
-            if (follow.imitation) {
-                let imitationDelay = calculateImitationDelay(follow.imitation);
-                if (imitationDelay > 0) {
-                    await instagram.page.waitFor(imitationDelay * 1000);
+                if (follow.imitation) {
+                    let imitationDelay = calculateImitationDelay(follow.imitation);
+                    if (imitationDelay > 0) {
+                        await instagram.page.waitFor(imitationDelay * 1000);
+                    };
                 };
             };
         };
 
         // Immutable delay after action.
         await instagram.page.waitFor(3000);
-    },
-
-    automationBasedOnTags: async (tags) => {
-
     },
 
     finishAutomation: async () => {

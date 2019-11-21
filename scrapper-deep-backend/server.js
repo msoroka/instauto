@@ -52,7 +52,7 @@ app.post("/automationBasedOnTags", (req, res, next) => {
         await ig.login(automationParameters.user);
 
         while (processAvailable) {
-            await ig.emailTagProcess(automationParameters.tags, automationParameters.like, automationParameters.follow);
+            await ig.automationBasedOnTags(automationParameters.tags, automationParameters.like, automationParameters.follow);
         }
 
         await ig.finishAutomation();
