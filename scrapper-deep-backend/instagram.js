@@ -10,7 +10,7 @@ const instagram = {
     initialize: async () => {
 
         instagram.browser = await puppeteer.launch({
-            headless: false
+            headless: false,
         });
 
         instagram.page = await instagram.browser.newPage();
@@ -64,7 +64,7 @@ const instagram = {
         if (like.active) {
             // Randomize like process.
             let randomProbability = Math.floor(1 + Math.random() * (100 + 1 - 1));
-            if (randomProbability >= like.probability) {
+            if (randomProbability <= like.probability) {
                 await instagram.page.waitFor('span[class="fr66n"]');
 
                 let likeButton = await instagram.page.$('span[class="fr66n"] > button');
@@ -86,7 +86,7 @@ const instagram = {
         await instagram.page.waitFor('div[class="bY2yH"]');
         if (follow.active) {
             let randomProbability = Math.floor(1 + Math.random() * (100 + 1 - 1));
-            if (randomProbability >= follow.probability) {
+            if (randomProbability <= follow.probability) {
                 console.log("FOLLOWING: " + randomProbability);
                 let followButton = await instagram.page.$('div[class="bY2yH"] > button');
                 await followButton.click();
