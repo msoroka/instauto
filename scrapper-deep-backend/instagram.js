@@ -11,18 +11,18 @@ const instagram = {
 
         instagram.browser = await puppeteer.launch({
             headless: false,
+            userDataDir: "./user_data"
         });
 
         instagram.page = await instagram.browser.newPage();
+        await instagram.page.goto(BASE_URL, {
+            waitUntil: 'networkidle2'
+        });
     },
 
     login: async (user) => {
         let username = user.login;
         let password = user.password;
-
-        await instagram.page.goto(BASE_URL, {
-            waitUntil: 'networkidle2'
-        });
 
         /* Click login button from the main site. */
         await instagram.page.waitFor('//a[contains(text(), "Zaloguj się")]');
@@ -49,16 +49,22 @@ const instagram = {
         // Choose random tag.
         let tag = tags[Math.floor(Math.random() * tags.length)];
 
-        await instagram.page.goto('https://www.instagram.com/explore/tags/' + tag, {
-            waitUntil: 'networkidle2'
+        // Type tag into searcher.
+        await instagram.page.waitFor('input[type="text"]');
+        await instagram.page.type('input[type="text"]', "#" + tag, {
+            delay: 500
         });
-        await instagram.page.waitFor(3000);
 
+        let tagPage = await instagram.page.$('div[class="fuqBx"] > a');
+        await tagPage.click();
+
+        await instagram.page.waitFor(3000);
         let posts = await instagram.page.$$('article > div:nth-child(3) img[decoding="auto"]');
 
         /* Click single post. */
         await posts[0].click();
         await instagram.page.waitFor('h2[class="BrX75"]');
+        await instagram.page.waitFor(5000);
 
         // Like process.
         if (like.active) {
