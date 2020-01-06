@@ -13,6 +13,6 @@ class Task extends Model
         'like',
         'follow',
         'status',
-        'start_at'
+        'start_at',
     ];
 }
