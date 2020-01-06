@@ -11,7 +11,7 @@ const instagram = {
 
         instagram.browser = await puppeteer.launch({
             headless: false,
-            userDataDir: "./user_data"
+            // userDataDir: "./user_data"
         });
 
         instagram.page = await instagram.browser.newPage();
@@ -55,59 +55,69 @@ const instagram = {
             delay: 500
         });
 
+        await instagram.page.waitFor('div[class="fuqBx"] > a');
         let tagPage = await instagram.page.$('div[class="fuqBx"] > a');
         await tagPage.click();
 
         await instagram.page.waitFor(3000);
         let posts = await instagram.page.$$('article > div:nth-child(3) img[decoding="auto"]');
 
-        /* Click single post. */
-        await posts[0].click();
-        await instagram.page.waitFor('h2[class="BrX75"]');
-        await instagram.page.waitFor(5000);
+        for (var i = 0; i < posts.length; i++) {
 
-        // Like process.
-        if (like.active) {
-            // Randomize like process.
-            let randomProbability = Math.floor(1 + Math.random() * (100 + 1 - 1));
-            if (randomProbability <= like.probability) {
-                await instagram.page.waitFor('span[class="fr66n"]');
+            await instagram.page.waitFor(3000);
 
-                let likeButton = await instagram.page.$('span[class="fr66n"] > button');
-                await likeButton.click();
+            /* Click single post. */
+            await posts[i].click();
 
-                if (like.imitation) {
-                    let imitationDelay = calculateImitationDelay(like.imitation);
-                    if (imitationDelay > 0) {
-                        await instagram.page.waitFor(imitationDelay * 1000);
+            await instagram.page.waitFor('h2[class="BrX75"]');
+            await instagram.page.waitFor(5000);
+
+            // Like process.
+            if (like.active) {
+                // Randomize like process.
+                let randomProbability = Math.floor(1 + Math.random() * (100 + 1 - 1));
+                if (randomProbability <= like.probability) {
+                    await instagram.page.waitFor('span[class="fr66n"]');
+
+                    let likeButton = await instagram.page.$('span[class="fr66n"] > button');
+                    await likeButton.click();
+
+                    if (like.imitation) {
+                        let imitationDelay = calculateImitationDelay(like.imitation);
+                        if (imitationDelay > 0) {
+                            await instagram.page.waitFor(imitationDelay * 1000);
+                        };
                     };
                 };
             };
-        };
 
-        // Immutable delay after action.
-        await instagram.page.waitFor(3000);
+            // Immutable delay after action.
+            await instagram.page.waitFor(3000);
 
-        // Follow process.
-        await instagram.page.waitFor('div[class="bY2yH"]');
-        if (follow.active) {
-            let randomProbability = Math.floor(1 + Math.random() * (100 + 1 - 1));
-            if (randomProbability <= follow.probability) {
-                console.log("FOLLOWING: " + randomProbability);
-                let followButton = await instagram.page.$('div[class="bY2yH"] > button');
-                await followButton.click();
+            // Follow process.
+            await instagram.page.waitFor('div[class="bY2yH"]');
+            if (follow.active) {
+                let randomProbability = Math.floor(1 + Math.random() * (100 + 1 - 1));
+                if (randomProbability <= follow.probability) {
+                    console.log("FOLLOWING: " + randomProbability);
+                    let followButton = await instagram.page.$('div[class="bY2yH"] > button');
+                    await followButton.click();
 
-                if (follow.imitation) {
-                    let imitationDelay = calculateImitationDelay(follow.imitation);
-                    if (imitationDelay > 0) {
-                        await instagram.page.waitFor(imitationDelay * 1000);
+                    if (follow.imitation) {
+                        let imitationDelay = calculateImitationDelay(follow.imitation);
+                        if (imitationDelay > 0) {
+                            await instagram.page.waitFor(imitationDelay * 1000);
+                        };
                     };
                 };
             };
-        };
 
-        // Immutable delay after action.
-        await instagram.page.waitFor(3000);
+            // Immutable delay after action.
+            await instagram.page.waitFor(3000);
+
+            // Close modal.
+            await instagram.page.$eval('button[class="ckWGn"]', el => el.click());
+        }
     },
 
     finishAutomation: async () => {

@@ -49,7 +49,7 @@ app.post("/automationBasedOnTags", (req, res, next) => {
 
     (async () => {
         await ig.initialize();
-        // await ig.login(automationParameters.user);
+        await ig.login(automationParameters.user);
 
         while (processAvailable) {
             await ig.automationBasedOnTags(automationParameters.tags, automationParameters.like, automationParameters.follow);
