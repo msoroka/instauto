@@ -10,7 +10,7 @@ const instagram = {
     initialize: async () => {
 
         instagram.browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             // userDataDir: "./user_data"
         });
 

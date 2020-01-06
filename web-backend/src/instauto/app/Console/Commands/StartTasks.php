@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 class StartTasks extends Command
 {
-    const URL = 'http://localhost:3000/automationBasedOnTags';
+    const URL = 'http://192.168.0.165:3000/automationBasedOnTags';
     //X-Service-Auth
     const TOKEN = '123456';
 
@@ -69,21 +69,18 @@ class StartTasks extends Command
                 'follow'   => $follow,
             ]);
 
-            $ch = curl_init();
-
-            curl_setopt($ch, CURLOPT_URL, self::URL);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            $ch = curl_init(self::URL);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Content-Type: application/json',
-                    'Content-Length: '.strlen($params),
-                    'X-Service-Auth: '.self::TOKEN,
-                )
-            );
-
+                'Content-Type:application/json',
+                'X-Service-Auth:'.self::TOKEN,
+            ));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
             curl_close($ch);
+
+            $task->status = 'complete';
+            $task->save();
         });
     }
 }
