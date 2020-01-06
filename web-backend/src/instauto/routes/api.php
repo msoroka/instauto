@@ -9,5 +9,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('instagram-profile', 'Api\InstagramProfileController@getUserInstagramProfile');
         Route::post('instagram-profile', 'Api\InstagramProfileController@updateOrCreate');
+
+        Route::resource('tasks', 'Api\TaskController');
     });
 });
