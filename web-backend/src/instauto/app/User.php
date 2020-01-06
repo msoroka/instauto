@@ -38,8 +38,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function authAccessToken()
     {
         return $this->hasMany(OauthAccessToken::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function instagramProfile()
+    {
+        return $this->hasOne(InstagramProfile::class);
     }
 }
