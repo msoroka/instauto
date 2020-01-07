@@ -43,6 +43,12 @@ const instagram = {
         await instagram.page.$eval('button[type=submit]', el => el.click());
 
         await instagram.page.waitFor(5000);
+
+        const [notificationButton] = await instagram.page.$x("//button[contains(., 'Nie teraz')]");
+        if (notificationButton) {
+            await notificationButton.click();
+            await instagram.page.waitFor(2000);
+        };
     },
 
     automationBasedOnTags: async (tags, like, follow) => {
