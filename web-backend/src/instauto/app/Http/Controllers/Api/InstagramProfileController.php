@@ -31,16 +31,24 @@ class InstagramProfileController
                 $profile->username = $request->input('username');
                 $profile->password = $request->input('password');
                 if ($profile->save()) {
-                    return response()->json('', Response::HTTP_OK);
+                    return response()->json([
+                        'data' => [
+                            'profile' => $profile,
+                        ],
+                    ], Response::HTTP_OK);
                 }
 
                 return response()->json('', Response::HTTP_UNPROCESSABLE_ENTITY);
-            } elseif (InstagramProfile::create([
+            } elseif ($profile = InstagramProfile::create([
                 'user_id'  => $user->id,
                 'username' => $request->input('username'),
                 'password' => $request->input('password'),
             ])) {
-                return response()->json('', Response::HTTP_OK);
+                return response()->json([
+                    'data' => [
+                        'profile' => $profile,
+                    ],
+                ], Response::HTTP_OK);
             }
 
             return response()->json('', Response::HTTP_UNPROCESSABLE_ENTITY);

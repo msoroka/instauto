@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\User;
 
@@ -21,6 +23,7 @@ class AuthController extends Controller
         return response()->json([
             'data' => [
                 'token' => $token,
+                'user'  => $user,
             ],
         ], Response::HTTP_OK);
     }
@@ -36,8 +39,31 @@ class AuthController extends Controller
             return response()->json([
                 'data' => [
                     'token' => $token,
+                    'user'  => $user,
                 ],
             ], Response::HTTP_OK);
+        }
+
+        return response()->json('', Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function update(Request $request)
+    {
+        if ($user = Auth::user()) {
+            if ($firstname = $request->input('first_name')) {
+                $user->first_name = $firstname;
+            }
+            if ($password = $request->input('password')) {
+                $user->password = Hash::make($password);
+            }
+
+            if ($user->save()) {
+                return response()->json([
+                    'data' => $user,
+                ], Response::HTTP_OK);
+            }
+
+            return response()->json('', Response::HTTP_BAD_REQUEST);
         }
 
         return response()->json('', Response::HTTP_UNAUTHORIZED);
