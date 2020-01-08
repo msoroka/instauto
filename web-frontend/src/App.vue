@@ -1,10 +1,20 @@
 <template>
     <v-app>
-        <Navbar v-if="authorized"/>
+        <Navbar v-if="this.$store.state.user.authorized"/>
         <v-content>
             <router-view/>
+            <v-dialog v-model="loading" fullscreen full-width>
+                <v-container fluid fill-height style="background-color: rgba(255, 255, 255, 0.5);">
+                    <v-layout justify-center align-center>
+                        <v-progress-circular
+                                indeterminate
+                                color="primary">
+                        </v-progress-circular>
+                    </v-layout>
+                </v-container>
+            </v-dialog>
         </v-content>
-        <Footer v-if="authorized"/>
+        <Footer v-if="this.$store.state.user.authorized"/>
     </v-app>
 </template>
 
@@ -22,15 +32,28 @@
 
         data: () => ({
             authorized: false,
+            loading: true
         }),
 
         mounted() {
-            this.authorized = this.$store.state.user.authorized;
+            this.loading = true;
+            this.$store.dispatch('checkAuth').then(() =>{
+                if(this.$store.state.user.authorized) {
+                    this.$router.push({name: 'home'});
+                } else {
+                    this.$router.push({name: 'login'});
+                }
+                this.loading = false;
+            }).catch(() => {
+                this.$router.push({name: 'login'});
+                this.loading = false;
+            });
         },
 
         watch: {
             authorized: function () {
-                this.authorized = this.$store.state.user.authorized;
+                console.log(this.$store.state.user.authorized);
+                return this.$store.state.user.authorized;
             }
         }
     };

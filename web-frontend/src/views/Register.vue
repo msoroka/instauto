@@ -29,6 +29,7 @@
                                     name="name"
                                     prepend-icon="person"
                                     type="text"
+                                    v-model="first_name"
                             />
                             <v-text-field
                                     id="email"
@@ -36,6 +37,7 @@
                                     name="email"
                                     prepend-icon="email"
                                     type="email"
+                                    v-model="email"
                             />
                             <v-text-field
                                     id="password"
@@ -43,19 +45,26 @@
                                     name="password"
                                     prepend-icon="lock"
                                     type="password"
+                                    v-model="password"
                             />
                             <v-text-field
                                     id="password_confirmation"
                                     label="Password Confirmation"
                                     name="password_confirmation"
                                     prepend-icon="lock"
-                                    type="password_confirmation"
+                                    type="password"
+                                    v-model="password_confirmation"
                             />
                         </v-form>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer/>
-                        <v-btn color="primary">Register</v-btn>
+                        <v-btn
+                                color="primary"
+                                :loading="loginLoading"
+                                @click="signUp()"
+                        >Register
+                        </v-btn>
                     </v-card-actions>
                     <v-card-actions>
                         <v-spacer/>
@@ -70,7 +79,39 @@
 
 <script>
     export default {
-        name: "Register"
+        name: "Register",
+        data() {
+            return {
+                first_name: "",
+                email: "",
+                password: "",
+                password_confirmation: "",
+                loginLoading: false
+            }
+        },
+
+        mounted() {
+            if (this.$store.state.user.authorized) {
+                this.$router.push({name: 'home'});
+            }
+        },
+
+        methods: {
+            signUp: function () {
+                this.loginLoading = true;
+                this.$store.dispatch('register', {
+                    first_name: this.first_name,
+                    email: this.email,
+                    password: this.password,
+                    password_confirmation: this.password_confirmation,
+                }).then(() => {
+                    this.$router.push({name: 'home'});
+                    this.loginLoading = false;
+                }).catch(() => {
+                    this.loginLoading = false;
+                })
+            }
+        }
     }
 </script>
 

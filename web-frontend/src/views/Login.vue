@@ -28,6 +28,7 @@
                                     name="email"
                                     prepend-icon="email"
                                     type="email"
+                                    v-model="login"
                             />
                             <v-text-field
                                     id="password"
@@ -35,12 +36,18 @@
                                     name="password"
                                     prepend-icon="lock"
                                     type="password"
+                                    v-model="password"
                             />
                         </v-form>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer/>
-                        <v-btn color="primary">Login</v-btn>
+                        <v-btn
+                                color="primary"
+                                @click="signIn()"
+                                :loading="loginLoading"
+                        >Login
+                        </v-btn>
                     </v-card-actions>
                     <v-card-actions>
                         <v-spacer/>
@@ -55,7 +62,35 @@
 
 <script>
     export default {
-        name: "Login"
+        name: "Login",
+        data() {
+            return {
+                login: '',
+                password: '',
+                loginLoading: false
+            }
+        },
+
+        mounted() {
+            if (this.$store.state.user.authorized) {
+                this.$router.push({name: 'home'});
+            }
+        },
+
+        methods: {
+            signIn: function () {
+                this.loginLoading = true;
+                this.$store.dispatch('login', {
+                    'email': this.login,
+                    'password': this.password
+                }).then(() => {
+                    this.$router.push({name: 'home'});
+                    this.loginLoading = false;
+                }).catch(() => {
+                    this.loginLoading = false;
+                })
+            }
+        }
     }
 </script>
 

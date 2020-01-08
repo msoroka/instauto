@@ -41,7 +41,7 @@
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
             <v-card-actions>
-                <v-btn text>Logout</v-btn>
+                <v-btn text @click="logout">Logout</v-btn>
             </v-card-actions>
         </v-app-bar>
     </div>
@@ -56,6 +56,16 @@
                 drawer: null
             }
         },
+
+        methods: {
+            logout: function () {
+                this.$store.dispatch('logout').then(() => {
+                    this.$router.push({name: 'login'});
+                }).catch(() => {
+                    this.$router.push({name: 'home'});
+                });
+            }
+        }
     };
 </script>
 

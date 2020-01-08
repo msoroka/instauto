@@ -23,27 +23,42 @@ const routes = [
     {
         path: "/login",
         name: "login",
-        component: Login
+        component: Login,
+        meta: {
+            requiresAuth: false
+        }
     },
     {
         path: "/register",
         name: "register",
-        component: Register
+        component: Register,
+        meta: {
+            requiresAuth: false
+        }
     },
     {
         path: "/tasks",
         name: "tasks",
         component: Tasks,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: "/profile",
         name: "profile",
         component: InstagramProfile,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: "/user",
         name: "user",
         component: User,
+        meta: {
+            requiresAuth: true
+        }
     }
 ];
 
@@ -53,16 +68,19 @@ const router = new VueRouter({
     routes
 });
 
-router.beforeEach((to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (store.state.user.authorized) {
-            next();
-        }else {
-            router.push({name: 'login'});
-        }
-    } else {
-        next();
-    }
-});
+// router.beforeEach((to, from, next) => {
+//     if (to.matched.some(record => record.meta.requiresAuth)) {
+//         if (store.state.user.authorized) {
+//             next();
+//         } else {
+//             router.push({name: 'login'});
+//         }
+//     } else {
+//         if (store.state.user.authorized) {
+//             router.push({name: 'home'});
+//         }
+//         next();
+//     }
+// });
 
 export default router;
