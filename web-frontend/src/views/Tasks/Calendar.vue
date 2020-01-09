@@ -1,5 +1,7 @@
 <template>
-    <v-container>
+    <v-container
+            v-if="this.$store.state.user.authorized"
+    >
         <v-row class="fill-height">
             <v-col>
                 <v-sheet height="64">
@@ -40,7 +42,8 @@
                         </v-menu>
                     </v-toolbar>
                 </v-sheet>
-                <v-sheet height="600">
+                <v-sheet height="600"
+                >
                     <v-calendar
                             ref="calendar"
                             v-model="focus"
@@ -69,12 +72,13 @@
                                     :color="selectedEvent.color"
                                     dark
                             >
-                                <v-btn icon>
+                                <v-btn @click="editTask(selectedEvent.id)" icon
+                                       v-if="selectedEvent.status === 'pending'">
                                     <v-icon>mdi-pencil</v-icon>
                                 </v-btn>
                                 <v-toolbar-title v-html="selectedEvent.name"/>
                                 <v-spacer/>
-                                <v-menu bottom left>
+                                <v-menu bottom left v-if="selectedEvent.status === 'pending'">
                                     <template v-slot:activator="{ on }">
                                         <v-btn
                                                 dark
@@ -87,13 +91,31 @@
 
                                     <v-list>
                                         <v-list-item>
-                                            <v-list-item-title>Delete</v-list-item-title>
+                                            <v-list-item-title @click="deleteEvent(selectedEvent.id)">Delete
+                                            </v-list-item-title>
                                         </v-list-item>
                                     </v-list>
                                 </v-menu>
                             </v-toolbar>
                             <v-card-text>
-                                <span v-html="selectedEvent.details"/>
+                                <v-card-text>
+                                    Status: {{ selectedEvent.status }}
+                                </v-card-text>
+                                <v-card-text>
+                                    Tags: {{ selectedEvent.name }}
+                                </v-card-text>
+                                <v-card-text>
+                                    Start at: {{ selectedEvent.start }}
+                                </v-card-text>
+                                <v-card-text>
+                                    End at: {{ selectedEvent.end }}
+                                </v-card-text>
+                                <v-card-text>
+                                    Like: {{ selectedEvent.like }}
+                                </v-card-text>
+                                <v-card-text>
+                                    Follow: {{ selectedEvent.follow }}
+                                </v-card-text>
                             </v-card-text>
                             <v-card-actions>
                                 <v-btn
@@ -116,6 +138,7 @@
     export default {
         name: "Tasks",
         data: () => ({
+            loading: true,
             focus: '',
             type: 'week',
             typeToLabel: {
@@ -174,6 +197,39 @@
                 this.focus = date
                 this.type = 'day'
             },
+            editTask(id) {
+                this.$router.push({
+                    name: "edit-task",
+                    params: {
+                        taskId: id
+                    }
+                });
+            },
+            deleteEvent(id) {
+                this.$store.dispatch('deleteTask', id).then(() => {
+                    this.selectedOpen = false;
+                    let events = [];
+                    let tasks = [];
+
+                    this.$store.dispatch('getTasks').then(data => {
+                        tasks = data.data.tasks;
+                        tasks.forEach(task => {
+                            events.push({
+                                name: task.tags,
+                                start: task.start_at,
+                                end: task.end_at,
+                                color: 'red',
+                                like: task.like,
+                                follow: task.follow,
+                                status: task.status,
+                                id: task.id
+                            });
+                        });
+                    });
+
+                    this.events = events;
+                });
+            },
             getEventColor(event) {
                 return event.color
             },
@@ -203,18 +259,29 @@
                 nativeEvent.stopPropagation()
             },
             updateRange({start, end}) {
-                const events = [];
+                let events = [];
+                let tasks = [];
 
-                events.push({
-                    name: 'Like for polishgirl',
-                    start: '2020-01-07 15:00',
-                    end: '2020-01-07 17:00',
-                    color: 'red',
+                this.$store.dispatch('getTasks').then(data => {
+                    tasks = data.data.tasks;
+                    tasks.forEach(task => {
+                        events.push({
+                            name: task.tags,
+                            start: task.start_at,
+                            end: task.end_at,
+                            color: 'red',
+                            like: task.like,
+                            follow: task.follow,
+                            status: task.status,
+                            id: task.id
+                        });
+                    });
                 });
 
-                this.start = start
-                this.end = end
-                this.events = events
+                this.events = events;
+
+                this.start = start;
+                this.end = end;
             },
             nth(d) {
                 return d > 3 && d < 21

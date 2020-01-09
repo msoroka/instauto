@@ -92,7 +92,7 @@
 
         mounted() {
             if (this.$store.state.user.authorized) {
-                this.$router.push({name: 'home'});
+                this.$router.push({name: 'calendar'});
             }
         },
 
@@ -105,7 +105,7 @@
                     password: this.password,
                     password_confirmation: this.password_confirmation,
                 }).then(() => {
-                    this.$router.push({name: 'home'});
+                    this.$router.push({name: 'calendar'});
                     this.loginLoading = false;
                 }).catch(() => {
                     this.loginLoading = false;

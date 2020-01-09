@@ -73,7 +73,9 @@
 
         mounted() {
             if (this.$store.state.user.authorized) {
-                this.$router.push({name: 'home'});
+                this.$router.push({name: 'calendar'});
+            } else {
+                this.$router.push({name: 'login'});
             }
         },
 
@@ -84,9 +86,10 @@
                     'email': this.login,
                     'password': this.password
                 }).then(() => {
-                    this.$router.push({name: 'home'});
+                    this.$router.push({name: 'calendar'});
                     this.loginLoading = false;
                 }).catch(() => {
+                    this.$router.push({name: 'login'});
                     this.loginLoading = false;
                 })
             }

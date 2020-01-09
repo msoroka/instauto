@@ -37,9 +37,9 @@
 
         mounted() {
             this.loading = true;
-            this.$store.dispatch('checkAuth').then(() =>{
-                if(this.$store.state.user.authorized) {
-                    this.$router.push({name: 'home'});
+            this.$store.dispatch('checkAuth').then(() => {
+                if (this.$store.state.user.authorized) {
+                    this.$router.push({name: 'calendar'});
                 } else {
                     this.$router.push({name: 'login'});
                 }
@@ -52,7 +52,6 @@
 
         watch: {
             authorized: function () {
-                console.log(this.$store.state.user.authorized);
                 return this.$store.state.user.authorized;
             }
         }

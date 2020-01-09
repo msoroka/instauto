@@ -3,11 +3,13 @@ import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "../views/Login";
 import Register from "../views/Register";
-import Tasks from "../views/Tasks";
+import Calendar from "../views/Tasks/Calendar";
 import User from "../views/User";
 import InstagramProfile from "../views/InstagramProfile";
+import Create from "../views/Tasks/Create";
+import Edit from "../views/Tasks/Edit";
 
-import store from '../store/index'
+// import store from '../store/index'
 
 Vue.use(VueRouter);
 
@@ -37,9 +39,25 @@ const routes = [
         }
     },
     {
-        path: "/tasks",
-        name: "tasks",
-        component: Tasks,
+        path: "/calendar",
+        name: "calendar",
+        component: Calendar,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: "/edit-task/:taskId",
+        name: "edit-task",
+        component: Edit,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: "/create-task",
+        name: "create-task",
+        component: Create,
         meta: {
             requiresAuth: true
         }
@@ -77,7 +95,7 @@ const router = new VueRouter({
 //         }
 //     } else {
 //         if (store.state.user.authorized) {
-//             router.push({name: 'home'});
+//             router.push({name: 'calendar'});
 //         }
 //         next();
 //     }

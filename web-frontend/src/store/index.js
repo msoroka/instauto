@@ -19,7 +19,9 @@ export default new Vuex.Store({
             authorized: false,
             data: []
         },
-        instagram: []
+        instagram: [],
+        task: {},
+        tasks: []
     },
     mutations: {
         USER_AUTH(state, data) {
@@ -43,9 +45,60 @@ export default new Vuex.Store({
         },
         INSTAGRAM(state, data) {
             state.instagram = data.profile;
+        },
+        TASK(state, data) {
+            state.task = data;
+        },
+        TASKS(state, data) {
+            state.tasks = data;
         }
     },
     actions: {
+        editTask({commit}, data) {
+            return editTask(data).then(data => {
+                commit('TASK', data);
+                return data;
+            }).catch(error => {
+                commit('TASK', []);
+                return error;
+            });
+        },
+        getTask({commit}, data) {
+            return getTask(data).then(data => {
+                commit('TASK', data);
+                return data;
+            }).catch(error => {
+                commit('TASK', []);
+                return error;
+            });
+        },
+        deleteTask({commit}, data) {
+            return deleteTask(data).then(data => {
+                commit('TASK', []);
+                return data;
+            }).catch(error => {
+                commit('TASK', []);
+                return error;
+            });
+        },
+        saveTask({commit}, data) {
+            return saveTask(data).then(data => {
+                commit('TASK', data.data);
+                return data;
+            }).catch(error => {
+                commit('TASK', []);
+                return error;
+            });
+        },
+        getTasks({commit}) {
+            return getTasks().then(data => {
+                commit('TASKS', data.data);
+                return data;
+            }).catch(error => {
+                commit('TASKS', []);
+                return error;
+            });
+        },
         checkAuth({commit}) {
             return checkAuth().then(data => {
                 commit('USER_AUTH', data.data);
@@ -109,6 +162,56 @@ export default new Vuex.Store({
     modules: {}
 });
 
+function editTask(params) {
+    return new Promise((resolve, reject) => {
+        axios.put(`${URL}/tasks/${params.id}`, params).then(response => {
+            resolve(response.data);
+        }).catch(error => {
+            reject(error.response.data);
+        });
+    });
+}
+
+function getTask(id) {
+    return new Promise((resolve, reject) => {
+        axios.get(`${URL}/tasks/${id}`).then(response => {
+            resolve(response.data);
+        }).catch(error => {
+            reject(error.response.data);
+        });
+    });
+}
+
+function saveTask(params) {
+    return new Promise((resolve, reject) => {
+        axios.post(`${URL}/tasks`, params).then(response => {
+            resolve(response.data);
+        }).catch(error => {
+            reject(error.response.data);
+        });
+    });
+}
+
+function deleteTask(id) {
+    return new Promise((resolve, reject) => {
+        axios.delete(`${URL}/tasks/${id}`,).then(response => {
+            resolve(response.data);
+        }).catch(error => {
+            reject(error.response.data);
+        });
+    });
+}
+
+function getTasks() {
+    return new Promise((resolve, reject) => {
+        axios.get(`${URL}/tasks`).then(response => {
+            resolve(response.data);
+        }).catch(error => {
+            reject(error.response.data);
+        });
+    });
+}
+
 function register(params) {
     return new Promise((resolve, reject) => {
         axios.post(`${URL}/register`, params).then(response => {
@@ -120,7 +223,6 @@ function register(params) {
 }
 
 function update(params) {
-    console.log(params);
     return new Promise((resolve, reject) => {
         axios.put(`${URL}/update`, params).then(response => {
             resolve(response.data);
