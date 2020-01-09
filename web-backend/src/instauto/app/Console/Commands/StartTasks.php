@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 class StartTasks extends Command
 {
-    const URL = 'http://192.168.0.165:3000/automationBasedOnTags';
+    const URL = 'http://192.168.0.164:3000/automationBasedOnTags';
     //X-Service-Auth
     const TOKEN = '123456';
 

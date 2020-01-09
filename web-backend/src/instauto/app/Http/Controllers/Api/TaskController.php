@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\CreateRequest;
 use App\Http\Requests\Task\UpdateRequest;
 use App\Task;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +21,11 @@ class TaskController extends Controller
     {
         if ($user = Auth::user()) {
             $tasks = $user->tasks;
+
+            $tasks = $tasks->each(function ($task) {
+                $startAt = Carbon::createFromFormat('Y-m-d H:i:s', $task->start_at);
+                $task['end_at'] = $startAt->addSeconds($task->duration)->format('Y-m-d H:i:s');
+            });
 
             return response()->json([
                 'data' => [
